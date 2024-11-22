@@ -75,11 +75,15 @@ function About() {
         console.log("newColors", newColors);
         
         return newColors;
+
       });
   
       setSelectedButtonColors(updatedColor);
       setSelectedBtnCount((prevCount) => prevCount + 1)
-    } else {
+      alert(`Button Clicked ${index + 1} and Button color changed to ${newColor}` )
+    }
+    else 
+    {
       const currentColor = buttonColors[index];
       const updatedColor = { ...selectedButtonColors };
   
@@ -93,8 +97,8 @@ function About() {
   
       setSelectedButtonColors(updatedColor);
       setSelectedBtnCount((prevCount) => prevCount - 1)
+      alert(`Button Clicked ${index + 1} and Button color changed from  ${currentColor} to "#6d1b7b"` )
     }
-    
   };
   console.log("selectedButtonColors", selectedButtonColors);
   console.log("selectedBtnCount", selectedBtnCount);
@@ -149,8 +153,8 @@ function About() {
           <Button
             key={i}
             onClick={() => handleClick(i)}
-            variant="contained"
-            style={{ backgroundColor: clicked ? buttonColors[i] : "#6d1b7b" }}
+            variant="outlined"
+            style={{ backgroundColor: clicked ? buttonColors[i] : "primary", color : clicked? "#fff" : "primary", borderColor:clicked ? "#fff" : "primary" }}
           >
             {clicked ? "selected" : "Click Me"}
           </Button>

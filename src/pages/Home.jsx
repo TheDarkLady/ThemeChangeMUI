@@ -29,22 +29,29 @@ function Home() {
       green: 0,
       blue: 0,
     };
-    if (colors.red > 0 || colors.green > 0) {
+    // if (colors.red > 0 || colors.green > 0) {
+    //   updatedColors.red = colors.red;
+    //   updatedColors.green = colors.green;
+    //   updatedColors.blue = 0;
+    // } else {
+    //   updatedColors.red = 0;
+    //   updatedColors.green = 0;
+    //   updatedColors.blue = colors.blue;
+    // }
+    if(colors.red === 0 && colors.green === 0){
+      updatedColors.blue = colors.blue
+    }
+    else{
       updatedColors.red = colors.red;
       updatedColors.green = colors.green;
-      updatedColors.blue = 0;
-    } else {
-      updatedColors.red = 0;
-      updatedColors.green = 0;
-      updatedColors.blue = colors.blue;
     }
     setNewColors(updatedColors);
     setColors(updatedColors)
-    setIsDisabled(true)
+    // setIsDisabled(true)
   };
   console.log("newColors", newColors);
-  
-
+  const inputDisabled = colors.blue > 0;
+  const blueInputDisabled = colors.red > 0 && colors.green > 0
   const [click, setClick] = useState(Array(10).fill(false));
   const [buttonColors, setButtonColors] = useState(Array(10).fill("secondary"));
 
@@ -96,25 +103,25 @@ function Home() {
           <Input
             type="number"
             name="red"
-            value={colors.red}
+            value={inputDisabled ? 0 : colors.red}
             onChange={handleChange}
-            disabled={isDisabled}
+            disabled={inputDisabled}
           />
           <label>Green :</label>
           <Input
             type="number"
             name="green"
-            value={colors.green}
+            value={inputDisabled ? 0 : colors.green}
             onChange={handleChange}
-            disabled={isDisabled}
+            disabled={inputDisabled}
           />
           <label>Blue :</label>
           <Input
             type="number"
             name="blue"
-            value={colors.blue}
+            value={blueInputDisabled ? 0 : colors.blue}
             onChange={handleChange}
-            disabled={isDisabled}
+            disabled={blueInputDisabled}
           />
           <Button type="submit" variant="contained" color="secondary" sx={{ width: "fit-content" }}>
             Submit
