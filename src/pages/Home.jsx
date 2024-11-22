@@ -10,9 +10,12 @@ function Home() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const numericValue = Number(value)
     setColors((prevColors) => ({
       ...prevColors,
-      [name]: Number(value),
+      [name]: numericValue,
+      ...(name === "blue" && numericValue > 0 ? {red:0, green:0}:{}),
+      ...(name !== "blue" && numericValue > 0 ? {blue:0}:{})
     }));
   };
 
@@ -21,6 +24,8 @@ function Home() {
     green: "",
     blue: "",
   });
+  const inputDisabled = colors.blue > 0;
+  const blueInputDisabled = colors.red > 0 && colors.green > 0
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedColors = {
@@ -40,8 +45,6 @@ function Home() {
     // setIsDisabled(true)
   };
   console.log("newColors", newColors);
-  const inputDisabled = colors.blue > 0;
-  const blueInputDisabled = colors.red > 0 && colors.green > 0
   const [click, setClick] = useState(Array(10).fill(false));
   const [buttonColors, setButtonColors] = useState(Array(10).fill("secondary"));
 
@@ -70,23 +73,28 @@ function Home() {
 
     setButtonColors((prevColors) => {
       // const updatedColors = {...selectedBtnColors}
-      console.log();
+      // console.log();
       
-      const updateNewColors = [...prevColors];
-      updateNewColors[index] = getRandomColors();
-      console.log("updateNewColors", updateNewColors[index]);
-      if(updateNewColors[index] === "#071ab6"){
-        newColors.blue = newColors.blue - (index + 1)
-      }
-      else if (updateNewColors[index] === "#eb0b0b"){
-        newColors.red = newColors.red - (index+1)
-      }
-      else{
-        newColors.green = newColors.green - (index + 1)
-      }
-      console.log("new colors after updation ", newColors);
+      const updateColors = [...prevColors];
+      updateColors[index] = getRandomColors();
+      console.log("updateColors", updateColors[index]);
+      setNewColors((prevNewColors) => {
+        console.log("click[index]", click[index])
+        const updatedNewColors = {...prevNewColors}
+        if(updateColors[index] === "#071ab6"){
+          updatedNewColors.blue = click[index] ?(updatedNewColors.blue +(index + 1)):(updatedNewColors.blue - (index+1))
+        }
+        else if (updateColors[index] === "#eb0b0b"){
+          updatedNewColors.red = click[index] ?(updatedNewColors.red +(index+1)) :(updatedNewColors.red -(index+1))
+        }
+        else if (updateColors[index]=== "#32c10f"){
+          updatedNewColors.green = click[index] ?(updatedNewColors.green +(index+1) ):(updatedNewColors.green -(index +1))
+        }
+        console.log("Updated New Colors", updatedNewColors);
+        return updatedNewColors;
+      })
       
-      return updateNewColors;
+      return updateColors;
       
     });
 
