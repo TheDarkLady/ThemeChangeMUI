@@ -17,11 +17,11 @@ function Home() {
   };
 
   const [newColors, setNewColors] = useState({
-    red: 0,
-    green: 0,
-    blue: 0,
+    red: "",
+    green: "",
+    blue: "",
   });
-
+  const [isDisabled, setIsDisabled] = useState(false)
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedColors = {
@@ -39,7 +39,11 @@ function Home() {
       updatedColors.blue = colors.blue;
     }
     setNewColors(updatedColors);
+    setColors(updatedColors)
+    setIsDisabled(true)
   };
+  console.log("newColors", newColors);
+  
 
   const [click, setClick] = useState(Array(10).fill(false));
   const [buttonColors, setButtonColors] = useState(Array(10).fill("secondary"));
@@ -56,12 +60,16 @@ function Home() {
     setClick((prevStates) => {
       const newStates = [...prevStates];
       newStates[index] = !newStates[index];
+      
       return newStates;
     });
 
     setButtonColors((prevColors) => {
+      
       const newColors = [...prevColors];
-      newColors[index] = getRandomColors(); 
+      newColors[index] = getRandomColors();
+      console.log("newColors", newColors);
+       
       return newColors;
     });
 
@@ -72,6 +80,7 @@ function Home() {
 
   return (
     <div>
+      <Typography variant="h3" component="h3"> When Red and Green both are 0 the Blue is 1 else 0</Typography>
       <form onSubmit={handleSubmit}>
         <Box
           sx={{
@@ -89,6 +98,7 @@ function Home() {
             name="red"
             value={colors.red}
             onChange={handleChange}
+            disabled={isDisabled}
           />
           <label>Green :</label>
           <Input
@@ -96,6 +106,7 @@ function Home() {
             name="green"
             value={colors.green}
             onChange={handleChange}
+            disabled={isDisabled}
           />
           <label>Blue :</label>
           <Input
@@ -103,6 +114,7 @@ function Home() {
             name="blue"
             value={colors.blue}
             onChange={handleChange}
+            disabled={isDisabled}
           />
           <Button type="submit" variant="contained" color="secondary" sx={{ width: "fit-content" }}>
             Submit
