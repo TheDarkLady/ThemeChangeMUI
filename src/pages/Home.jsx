@@ -21,7 +21,6 @@ function Home() {
     green: "",
     blue: "",
   });
-  const [isDisabled, setIsDisabled] = useState(false)
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedColors = {
@@ -29,19 +28,10 @@ function Home() {
       green: 0,
       blue: 0,
     };
-    // if (colors.red > 0 || colors.green > 0) {
-    //   updatedColors.red = colors.red;
-    //   updatedColors.green = colors.green;
-    //   updatedColors.blue = 0;
-    // } else {
-    //   updatedColors.red = 0;
-    //   updatedColors.green = 0;
-    //   updatedColors.blue = colors.blue;
-    // }
-    if(colors.red === 0 && colors.green === 0){
+    if (colors.red === 0 && colors.green === 0) {
       updatedColors.blue = colors.blue
     }
-    else{
+    else {
       updatedColors.red = colors.red;
       updatedColors.green = colors.green;
     }
@@ -62,29 +52,52 @@ function Home() {
   };
 
   const [selectedBtnCount, setSelectedBtnCount] = useState(0);
+  const [selectedBtnColors, setSelectedBtnColors] = useState({
+    red: 0,
+    green: 0,
+    blue: 0
+  })
 
   const handleClick = (index) => {
+    console.log("Clicked button index",index+1);
+    
     setClick((prevStates) => {
       const newStates = [...prevStates];
       newStates[index] = !newStates[index];
-      
+
       return newStates;
     });
 
     setButtonColors((prevColors) => {
+      // const updatedColors = {...selectedBtnColors}
+      console.log();
       
-      const newColors = [...prevColors];
-      newColors[index] = getRandomColors();
-      console.log("newColors", newColors);
-       
-      return newColors;
+      const updateNewColors = [...prevColors];
+      updateNewColors[index] = getRandomColors();
+      console.log("updateNewColors", updateNewColors[index]);
+      if(updateNewColors[index] === "#071ab6"){
+        newColors.blue = newColors.blue - (index + 1)
+      }
+      else if (updateNewColors[index] === "#eb0b0b"){
+        newColors.red = newColors.red - (index+1)
+      }
+      else{
+        newColors.green = newColors.green - (index + 1)
+      }
+      console.log("new colors after updation ", newColors);
+      
+      return updateNewColors;
+      
     });
 
     setSelectedBtnCount((prevCount) =>
-      click[index] ? prevCount - 1 : prevCount + 1 
+      click[index] ? prevCount - 1 : prevCount + 1
     );
   };
-
+  const [displaySelectBtns, setDisplaySelectBtns] = useState(false)
+  const handleSelectButtons = () => {
+    setDisplaySelectBtns(true)
+  }
   return (
     <div>
       <Typography variant="h3" component="h3"> When Red and Green both are 0 the Blue is 1 else 0</Typography>
@@ -123,21 +136,22 @@ function Home() {
             onChange={handleChange}
             disabled={blueInputDisabled}
           />
-          <Button type="submit" variant="contained" color="secondary" sx={{ width: "fit-content" }}>
+          <Button type="submit" variant="contained" color="secondary" sx={{ width: "fit-content" }} onClick={handleSelectButtons}>
             Submit
           </Button>
         </Box>
       </form>
 
-      <Box sx={{ display: "flex", flexDirection: "row", gap: 2, flexWrap: "wrap" }}>
+      <Box sx={{ display: displaySelectBtns ? "flex" : "none", flexDirection: "row", gap: 2, flexWrap: "wrap" }}>
         {click.map((clicked, i) => (
           <Button
             key={i}
             onClick={() => handleClick(i)}
             variant="contained"
-            style={{ backgroundColor: clicked ? buttonColors[i] : "#6d1b7b" }} 
+            style={{ backgroundColor: clicked ? buttonColors[i] : "#6d1b7b" }}
           >
-            {clicked ? "selected" : "Click Me"}
+            {/* {clicked ? "selected" : "Click Me"} */}
+            {i+1}
           </Button>
         ))}
       </Box>
@@ -146,13 +160,22 @@ function Home() {
         <Typography variant="h4" component="h4">
           No of buttons selected : {selectedBtnCount}
         </Typography>
+        <Typography variant="h4" component="h4">
+          Red : {newColors.red}
+        </Typography>
+        <Typography variant="h4" component="h4">
+          Green : {newColors.green}
+        </Typography>
+        <Typography variant="h4" component="h4">
+          Blue : {newColors.blue}
+        </Typography>
       </Box>
 
-      <Box sx={{ marginTop: "20px" }}>
+      {/* <Box sx={{ marginTop: "20px" }}>
         <Typography variant="h4" component="h4">
           The magic number : {selectedBtnCount - newColors.blue}
         </Typography>
-      </Box>
+      </Box> */}
     </div>
   );
 }
