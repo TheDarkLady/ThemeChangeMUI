@@ -29,21 +29,15 @@ function Home() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedColors = {
-      red: 0,
-      green: 0,
-      blue: 0,
+      red: colors.red > 0 ? colors.red : 0,
+      green: colors.green > 0 ? colors.green : 0,
+      blue: colors.red === 0 && colors.green === 0 ? colors.blue : 0,
     };
-    if (colors.red === 0 && colors.green === 0) {
-      updatedColors.blue = colors.blue
-    }
-    else {
-      updatedColors.red = colors.red;
-      updatedColors.green = colors.green;
-    }
+  
     setNewColors(updatedColors);
-    setColors(updatedColors)
-    // setIsDisabled(true)
+    setColors(updatedColors);
   };
+  
   console.log("newColors", newColors);
   const [click, setClick] = useState(Array(10).fill(false));
   const [buttonColors, setButtonColors] = useState(Array(10).fill("secondary"));
@@ -62,46 +56,58 @@ function Home() {
   })
 
   const handleClick = (index) => {
-    console.log("Clicked button index",index+1);
-    
     setClick((prevStates) => {
       const newStates = [...prevStates];
       newStates[index] = !newStates[index];
-
+  
+      setButtonColors((prevColors) => {
+        const updatedColors = [...prevColors];
+        const newColor = getRandomColors();
+        const prevColor = prevColors[index]; // Get the previous color
+        updatedColors[index] = newColor;
+  
+        // Update newColors based on the button's previous and new states
+        setNewColors((prevNewColors) => {
+          const updatedNewColors = { ...prevNewColors };
+  
+          // If the button was previously selected, subtract its contribution
+          if (newStates[index] === false) {
+            if (prevColor === "#071ab6") {
+              updatedNewColors.blue += index + 1;
+            } else if (prevColor === "#eb0b0b") {
+              updatedNewColors.red += index + 1;
+            } else if (prevColor === "#32c10f") {
+              updatedNewColors.green += index + 1;
+            }
+          }
+  
+          // If the button is now selected, add its contribution
+          if (newStates[index] === true) {
+            if (newColor === "#071ab6") {
+              updatedNewColors.blue -= index + 1;
+            } else if (newColor === "#eb0b0b") {
+              updatedNewColors.red -= index + 1;
+            } else if (newColor === "#32c10f") {
+              updatedNewColors.green -= index + 1;
+            }
+          }
+  
+          return updatedNewColors;
+        });
+  
+        return updatedColors;
+      });
+  
       return newStates;
     });
-
-    setButtonColors((prevColors) => {
-      // const updatedColors = {...selectedBtnColors}
-      // console.log();
-      
-      const updateColors = [...prevColors];
-      updateColors[index] = getRandomColors();
-      console.log("updateColors", updateColors[index]);
-      setNewColors((prevNewColors) => {
-        console.log("click[index]", click[index])
-        const updatedNewColors = {...prevNewColors}
-        if(updateColors[index] === "#071ab6"){
-          updatedNewColors.blue = click[index] ?(updatedNewColors.blue +(index + 1)):(updatedNewColors.blue - (index+1))
-        }
-        else if (updateColors[index] === "#eb0b0b"){
-          updatedNewColors.red = click[index] ?(updatedNewColors.red +(index+1)) :(updatedNewColors.red -(index+1))
-        }
-        else if (updateColors[index]=== "#32c10f"){
-          updatedNewColors.green = click[index] ?(updatedNewColors.green +(index+1) ):(updatedNewColors.green -(index +1))
-        }
-        console.log("Updated New Colors", updatedNewColors);
-        return updatedNewColors;
-      })
-      
-      return updateColors;
-      
-    });
-
+  
     setSelectedBtnCount((prevCount) =>
       click[index] ? prevCount - 1 : prevCount + 1
     );
   };
+  
+  
+  
   const [displaySelectBtns, setDisplaySelectBtns] = useState(false)
   const handleSelectButtons = () => {
     setDisplaySelectBtns(true)
