@@ -6,7 +6,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
-import Landing from './pages/landing';
+import Landing from './pages/Landing';
 import Contact from './pages/Contact';
 
 function App() {

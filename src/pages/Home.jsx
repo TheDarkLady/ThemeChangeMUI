@@ -1,5 +1,7 @@
+import React from 'react'
 import { Box, Button, Input, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
+
 
 function Home() {
   const [colors, setColors] = useState({
@@ -41,7 +43,8 @@ function Home() {
   console.log("newColors", newColors);
   const [click, setClick] = useState(Array(10).fill(false));
   const [buttonColors, setButtonColors] = useState(Array(10).fill("secondary"));
-
+  console.log("Button Colors : ", buttonColors);
+  
   // Updated getRandomColors function with custom hex color codes
   const getRandomColors = () => {
     const colorOptions = ["#eb0b0b", "#071ab6", "#32c10f"]; // Custom hex color codes
@@ -49,58 +52,79 @@ function Home() {
   };
 
   const [selectedBtnCount, setSelectedBtnCount] = useState(0);
-  const [selectedBtnColors, setSelectedBtnColors] = useState({
-    red: 0,
-    green: 0,
-    blue: 0
+  const [selectedBtnColorIndex, setSelectedBtnColorIndex] = useState({
+    red: [],
+    green: [],
+    blue: []
   })
 
   const handleClick = (index) => {
+    console.log("colors", colors);
+    
     setClick((prevStates) => {
       const newStates = [...prevStates];
+      console.log("new States :", newStates);
+      
       newStates[index] = !newStates[index];
-  
+      console.log("newStates[index]", newStates[index]);
+      
       setButtonColors((prevColors) => {
         const updatedColors = [...prevColors];
         const newColor = getRandomColors();
         const prevColor = prevColors[index]; // Get the previous color
         updatedColors[index] = newColor;
-  
-        // Update newColors based on the button's previous and new states
-        setNewColors((prevNewColors) => {
-          const updatedNewColors = { ...prevNewColors };
-  
-          // If the button was previously selected, subtract its contribution
-          if (newStates[index] === false) {
-            if (prevColor === "#071ab6") {
-              updatedNewColors.blue += index + 1;
-            } else if (prevColor === "#eb0b0b") {
-              updatedNewColors.red += index + 1;
-            } else if (prevColor === "#32c10f") {
-              updatedNewColors.green += index + 1;
+        
+        setSelectedBtnColorIndex((prevSelectedBtnColorIndex) => {
+          const updatedSelectedBtnColorIndex = {...prevSelectedBtnColorIndex }
+          console.log("updatedSelectedBtnColorIndex before updation", updatedSelectedBtnColorIndex);
+          if(newStates[index] === false){
+            if(prevColor === "#071ab6"){
+              updatedSelectedBtnColorIndex.blue.pop()
+            }
+            else if(prevColor === "#eb0b0b"){
+              updatedSelectedBtnColorIndex.red.pop()
+            }
+            else if(prevColor === "#32c10f"){
+              updatedSelectedBtnColorIndex.green.pop()
             }
           }
-  
-          // If the button is now selected, add its contribution
-          if (newStates[index] === true) {
-            if (newColor === "#071ab6") {
-              updatedNewColors.blue -= index + 1;
-            } else if (newColor === "#eb0b0b") {
-              updatedNewColors.red -= index + 1;
-            } else if (newColor === "#32c10f") {
-              updatedNewColors.green -= index + 1;
+          
+          if(newStates[index] === true){
+            if(newColor === "#071ab6"){
+              updatedSelectedBtnColorIndex.blue.push(index+1)
+            }
+            else if(newColor === "#eb0b0b"){
+              updatedSelectedBtnColorIndex.red.push(index +1)
+            }
+            else if(newColor === "#32c10f"){
+              updatedSelectedBtnColorIndex.green.push(index+1) 
             }
           }
-  
-          return updatedNewColors;
-        });
-  
+          console.log("updatedSelectedBtnColorIndex after updation", updatedSelectedBtnColorIndex);
+          console.log("last element in red", updatedSelectedBtnColorIndex.red.slice(-1)[0]);
+          console.log("last element in blue", updatedSelectedBtnColorIndex.blue.slice(-1)[0]);
+          console.log("last element in green", updatedSelectedBtnColorIndex.green.slice(-1)[0]);
+          
+          return updatedSelectedBtnColorIndex;
+        })
+        console.log("updatedColors", updatedColors);
         return updatedColors;
       });
-  
       return newStates;
     });
-  
+    setNewColors((prevNewColors) => {
+      const updatedNewColors = {...prevNewColors}
+      console.log("selectedBtnColorIndex", selectedBtnColorIndex);
+      
+      console.log("updatedNewColors before updation",updatedNewColors)
+      updatedNewColors.red  = newColors.red - selectedBtnColorIndex.red.slice(-1)[0]
+      updatedNewColors.blue  = newColors.blue - selectedBtnColorIndex.blue.slice(-1)[0]
+      updatedNewColors.green  = newColors.green - selectedBtnColorIndex.green.slice(-1)[0]
+      console.log("updatedNewColors after updation",updatedNewColors)
+      
+    })
+
+    
     setSelectedBtnCount((prevCount) =>
       click[index] ? prevCount - 1 : prevCount + 1
     );
@@ -175,13 +199,13 @@ function Home() {
           No of buttons selected : {selectedBtnCount}
         </Typography>
         <Typography variant="h4" component="h4">
-          Red : {newColors.red}
+          Red : 
         </Typography>
         <Typography variant="h4" component="h4">
-          Green : {newColors.green}
+          Green : 
         </Typography>
         <Typography variant="h4" component="h4">
-          Blue : {newColors.blue}
+          Blue : 
         </Typography>
       </Box>
 
@@ -194,4 +218,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Home
