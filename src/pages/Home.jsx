@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Box, Button, Input, Typography } from "@mui/material";
 import { useState } from "react";
 
@@ -58,79 +58,96 @@ function Home() {
     blue: []
   })
 
+  const [previousColors, setPreviousColors] = useState(Array(10).fill(null));
+  useEffect(()=>{
+    console.log("selectedBtnColorIndex", selectedBtnColorIndex);
+  },[selectedBtnColorIndex])
+
   const handleClick = (index) => {
-    console.log("colors", colors);
-    
     setClick((prevStates) => {
       const newStates = [...prevStates];
-      console.log("new States :", newStates);
-      
       newStates[index] = !newStates[index];
-      console.log("newStates[index]", newStates[index]);
-      
+  
       setButtonColors((prevColors) => {
         const updatedColors = [...prevColors];
         const newColor = getRandomColors();
-        const prevColor = prevColors[index]; // Get the previous color
-        updatedColors[index] = newColor;
+        const prevColor = previousColors[index]; // Previous color before change
         
-        setSelectedBtnColorIndex((prevSelectedBtnColorIndex) => {
-          const updatedSelectedBtnColorIndex = {...prevSelectedBtnColorIndex }
-          console.log("updatedSelectedBtnColorIndex before updation", updatedSelectedBtnColorIndex);
-          if(newStates[index] === false){
-            if(prevColor === "#071ab6"){
-              updatedSelectedBtnColorIndex.blue.pop()
-            }
-            else if(prevColor === "#eb0b0b"){
-              updatedSelectedBtnColorIndex.red.pop()
-            }
-            else if(prevColor === "#32c10f"){
-              updatedSelectedBtnColorIndex.green.pop()
-            }
+        if (!newStates[index]) {
+          // Deselect logic: Add back the value of the previous color to `newColors`
+          if (prevColor === "#071ab6") { // Blue
+            setNewColors((prevNewColors) => ({
+              ...prevNewColors,
+              blue: (prevNewColors.blue || 0) + (selectedBtnColorIndex.blue.pop() || 0),
+            }));
+          } 
+          else if (prevColor === "#eb0b0b") { // Red
+            setNewColors((prevNewColors) => ({
+              ...prevNewColors,
+              red: (prevNewColors.red || 0) + (selectedBtnColorIndex.red.pop() || 0),
+            }));
+          } 
+          else if (prevColor === "#32c10f") { // Green
+            setNewColors((prevNewColors) => ({
+              ...prevNewColors,
+              green: (prevNewColors.green || 0) + (selectedBtnColorIndex.green.pop() || 0),
+            }));
           }
-          
-          if(newStates[index] === true){
-            if(newColor === "#071ab6"){
-              updatedSelectedBtnColorIndex.blue.push(index+1)
+        } else {
+          // Select logic: Subtract the value of the new color from `newColors`
+          updatedColors[index] = newColor;
+          if (newColor === "#071ab6") { // Blue
+            setNewColors((prevNewColors) => ({
+              ...prevNewColors,
+              blue: (prevNewColors.blue || 0) - (index + 1),
+            }));
+            setSelectedBtnColorIndex((prev) => ({
+              ...prev,
+              blue: [...prev.blue, index + 1],
+            }));
+          } 
+          else if (newColor === "#eb0b0b") { // Red
+            setNewColors((prevNewColors) => ({
+              ...prevNewColors,
+              red: (prevNewColors.red || 0) - (index + 1),
+            }));
+            setSelectedBtnColorIndex((prev) => ({
+              ...prev,
+              red: [...prev.red, index + 1],
+            }));
+          } 
+          else if (newColor === "#32c10f") { // Green
+            setNewColors((prevNewColors) => ({
+              ...prevNewColors,
+              green: (prevNewColors.green || 0) - (index + 1),
+            }));
+            setSelectedBtnColorIndex((prev) => ({
+              ...prev,
+              green: [...prev.green, index + 1],
             }
-            else if(newColor === "#eb0b0b"){
-              updatedSelectedBtnColorIndex.red.push(index +1)
-            }
-            else if(newColor === "#32c10f"){
-              updatedSelectedBtnColorIndex.green.push(index+1) 
-            }
-          }
-          console.log("updatedSelectedBtnColorIndex after updation", updatedSelectedBtnColorIndex);
-          console.log("last element in red", updatedSelectedBtnColorIndex.red.slice(-1)[0]);
-          console.log("last element in blue", updatedSelectedBtnColorIndex.blue.slice(-1)[0]);
-          console.log("last element in green", updatedSelectedBtnColorIndex.green.slice(-1)[0]);
-          
-          return updatedSelectedBtnColorIndex;
-        })
-        console.log("updatedColors", updatedColors);
+            
+          ));
+        }
+        }
+        
+        // Update previousColors
+        setPreviousColors((prev) => {
+          const updatedPrevColors = [...prev];
+          updatedPrevColors[index] = newColor;
+          return updatedPrevColors;
+        });
+        
         return updatedColors;
       });
+      
       return newStates;
     });
-    setNewColors((prevNewColors) => {
-      const updatedNewColors = {...prevNewColors}
-      console.log("selectedBtnColorIndex", selectedBtnColorIndex);
-      
-      console.log("updatedNewColors before updation",updatedNewColors)
-      updatedNewColors.red  = newColors.red - selectedBtnColorIndex.red.slice(-1)[0]
-      updatedNewColors.blue  = newColors.blue - selectedBtnColorIndex.blue.slice(-1)[0]
-      updatedNewColors.green  = newColors.green - selectedBtnColorIndex.green.slice(-1)[0]
-      console.log("updatedNewColors after updation",updatedNewColors)
-      
-    })
-
-    
+  
+    // Update selected button count
     setSelectedBtnCount((prevCount) =>
       click[index] ? prevCount - 1 : prevCount + 1
     );
   };
-  
-  
   
   const [displaySelectBtns, setDisplaySelectBtns] = useState(false)
   const handleSelectButtons = () => {
@@ -199,13 +216,13 @@ function Home() {
           No of buttons selected : {selectedBtnCount}
         </Typography>
         <Typography variant="h4" component="h4">
-          Red : 
+          Red : {newColors.red}
         </Typography>
         <Typography variant="h4" component="h4">
-          Green : 
+          Green : {newColors.green}
         </Typography>
         <Typography variant="h4" component="h4">
-          Blue : 
+          Blue : {newColors.blue}
         </Typography>
       </Box>
 
